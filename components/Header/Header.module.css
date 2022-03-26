@@ -1,0 +1,13 @@
+.Header {
+  padding: 1rem;
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+.HeaderContent {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
