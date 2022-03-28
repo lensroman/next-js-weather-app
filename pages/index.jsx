@@ -1,36 +1,37 @@
-import React from 'react';
+import React, { useEffect } from "react";
 
-import regions from "../public/static/regions.json";
+import { useRouter } from "next/router";
 
-import Header from '../components/Header/Header';
-import Layout from '../components/Layout/Layout';
-import List from '../components/List/List';
+import countries from '../public/static/country.json';
 
-import { Typography, Divider } from '@mui/material';
+import Header from "../components/Header/Header";
+import Layout from "../components/Layout/Layout";
+import List from "../components/List/List";
 
-import classes from '../styles/index.module.css';
+import { Typography, Divider } from "@mui/material";
+
+import classes from "../styles/index.module.css";
 
 const Home = () => {
+  const router = useRouter()
 
-  const regionsSet = new Set();
+  let countriesArray = []
 
-  regions.forEach((region) => {
-    regionsSet.add(region.region);
-  });
-
-  const regionsArray = Array.from(regionsSet);
+  for (let country of countries) {
+    countriesArray.push(country.name)
+  }
 
   return (
     <div className={classes.Home}>
       <Layout>
         <Typography variant={"h5"} color={"primary"} sx={{ mt: 2 }}>
-          Погода по регионам России
-        </Typography>
+            Погода по странам
+          </Typography>
         <Divider />
-        <List list={regionsArray} regions />
+        <List list={countriesArray} category={'country'} />
       </Layout>
     </div>
-  )
-}
+  );
+};
 
 export default Home;

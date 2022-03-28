@@ -1,0 +1,34 @@
+.CurrentWeather {
+  padding: 1rem;
+  width: 90%;
+  margin: 2rem auto;
+  border: 1px soild #ccc;
+  box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+}
+
+.weatherContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conditionBox {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 15rem;
+  padding: 2rem;
+}
+
+.weatherBox {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 2rem;
+}

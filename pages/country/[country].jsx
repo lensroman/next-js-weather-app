@@ -1,37 +1,34 @@
-import React from 'react';
-
-import { useRouter } from "next/dist/client/router";
-
-import regionsJSON from '../../public/static/region.json';
-import citiesJSON from '../../public/static/city.json';
+import React, { useEffect } from "react";
 
 import List from "../../components/List/List";
 import Layout from "../../components/Layout/Layout";
 
+import regionsJSON from "../../public/static/region.json";
+import countriesJSON from '../../public/static/country.json';
+
 import { Box, Typography, Divider, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-function Region() {
+import { useRouter } from "next/dist/client/router";
 
-  const router = useRouter()
+function Country() {
+  const router = useRouter();
 
-  const countryQuery = router.query.c
+  const countryQuery = router.query.country;
 
-  const regionQuery = router.query.region
+  let countryId = null
 
-  let cities = []
+  let regions = [];
 
-  let regionId = null
-
-  for (let region of regionsJSON) {
-    if (region.name === regionQuery) {
-      regionId = region.region_id
+  for (let country of countriesJSON) {
+    if (country.name === countryQuery) {
+      countryId = country.country_id
     }
   }
 
-  for (let city of citiesJSON) {
-    if (city.region_id === regionId) {
-      cities.push(city.name)
+  for(let region of regionsJSON) {
+    if (region.country_id === countryId) {
+      regions.push(region.name)
     }
   }
 
@@ -50,7 +47,7 @@ function Region() {
           }}
         >
           <Typography variant={"h5"} color={"primary"} sx={{ mt: 2 }}>
-            Погода по городам региона {regionQuery}
+            Погода по регионам страны {countryQuery}
           </Typography>
           <Button
             variant={"outlined"}
@@ -61,10 +58,10 @@ function Region() {
           </Button>
         </Box>
         <Divider />
-        <List list={cities} category={'city'} />
+        <List list={regions} category={'region'} />
       </Layout>
     </div>
   );
 }
 
-export default Region;
+export default Country;
