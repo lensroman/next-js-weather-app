@@ -6,10 +6,13 @@ import axiosGeo from "../../src/axios-instance-geo";
 import axiosWeather from "../../src/axios-instance-weather";
 
 import Layout from "../../components/Layout/Layout";
-
-import { Box, Typography, Button, Divider } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CurrentWeather from "../../components/Weather/CurrentWeather/CurrentWeather";
+
+import {Box, Typography, Button, Divider, Tabs, Tab} from '@mui/material'
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ForecastWeather from '../../components/Weather/ForecastWeather/ForecastWeather'
+import Chart from '../../components/Chart/Chart'
+
 
 function City() {
   const router = useRouter();
@@ -21,86 +24,111 @@ function City() {
   const region = router.query.r;
 
   const [currentWeather, setCurrentWeather] = useState(null);
-  const [forecastWeather, setForecastWeather] = useState({});
+  const [forecastWeather, setForecastWeather] = useState(null);
+  
+  const [forecast, setForecast] = useState('сейчас')
+  
+  const hour = new Date().getHours() + 1
 
   const goBackHandler = () => {
-    router.back();
+    router.back()
   };
+  
+  const tabsForecastHandler = (event, newValue) => {
+    setForecast(newValue)
+  }
 
   const fetchWeather = useCallback(async () => {
-    let coordinatesResponse = null;
-    if (city && country && region) {
+    let coordinatesResponse = null
+    if (city && country) {
       coordinatesResponse = await axiosGeo.get("json", {
         params: {
-          key: "c9c8a0b84a36414ba89761eb00a6d1ec",
+          key: "4c4cea6d3c944752a6f0c6e67aee3033",
           q: `${country} ${city}`,
         },
-      });
+      })
       if (!coordinatesResponse.data.results[0]) {
         coordinatesResponse = await axiosGeo.get("json", {
           params: {
-            key: "c9c8a0b84a36414ba89761eb00a6d1ec",
+            key: "4c4cea6d3c944752a6f0c6e67aee3033",
             q: `${country} ${region}`,
           },
-        });
+        })
       }
       if (!coordinatesResponse.data.results[0]) {
         coordinatesResponse = await axiosGeo.get("json", {
           params: {
-            key: "c9c8a0b84a36414ba89761eb00a6d1ec",
+            key: "4c4cea6d3c944752a6f0c6e67aee3033",
             q: `${country}`,
           },
-        });
+        })
       }
       const coordinates = coordinatesResponse.data.results[0].geometry;
       const forecastThreeDaysResponse = await axiosWeather.get(
         "forecast.json",
         {
           params: {
-            key: "7a8146bf0b024038af8122158222703",
+            key: "2b6d59dd339a4bdaa8e110520222803",
             q: `${coordinates.lat},${coordinates.lng}`,
-            days: 3,
+            days: 4,
             lang: "ru",
           },
         }
-      );
+      )
       await setCurrentWeather(forecastThreeDaysResponse.data.current);
       await setForecastWeather(
         forecastThreeDaysResponse.data.forecast.forecastday
-      );
+      )
     }
-  }, [city, country, region]);
-
+  }, [city, country, region])
+  
   useEffect(() => {
-    fetchWeather();
-  }, [fetchWeather]);
+    fetchWeather()
+  }, [fetchWeather])
 
-  console.log(currentWeather)
+  let weatherBox = null
+  
+  let chart = null
 
-  let currentWeatherBox = null;
-
-  if (currentWeather) {
-    currentWeatherBox = (
+  if (currentWeather && forecastWeather && hour && forecast === 'сейчас') {
+    weatherBox = (
       <CurrentWeather
         city={city}
-        conditionIcon={currentWeather.condition.icon}
-        conditionText={currentWeather.condition.text}
-        tempC={currentWeather.temp_c}
-        tempF={currentWeather.temp_f}
-        feelslikeC={currentWeather.feelslike_c}
-        feelslikeF={currentWeather.feelslike_f}
-        precip={currentWeather.precip_mm}
-        pressure={(currentWeather.pressure_mb * 0.750062).toFixed(0)}
-        windKPH={(currentWeather.wind_kph / 3.6).toFixed(1)}
-        windMPH={currentWeather.wind_mph}
-        windDir={currentWeather.wind_dir}
-        gustKPH={(currentWeather.gust_kph / 3.6).toFixed(1)}
-        humidity={currentWeather.humidity}
-        uvIndex={currentWeather.uv}
+        hour={hour}
+        current
+        weather={currentWeather}
+        forecast={forecastWeather[0]}
       />
     );
+    chart = (
+      <Chart forecast={forecastWeather} />
+    )
   }
-
+  
+  if (forecastWeather && forecast === 'На завтра') {
+    weatherBox = (
+      <ForecastWeather
+        city={city}
+        weather={forecastWeather[1]}
+      />
+    )
+    chart = (
+      <Chart forecast={forecastWeather} />
+    )
+  }
+  
+  if (forecastWeather && forecast === 'На послезавтра') {
+    weatherBox = (
+      <ForecastWeather
+        city={city}
+        weather={forecastWeather[2]}
+      />
+    )
+    chart = (
+      <Chart forecast={forecastWeather} />
+    )
+  }
+  
   return (
     <div>
       <Layout>
@@ -113,7 +141,7 @@ function City() {
           }}
         >
           <Typography variant={"h5"} color={"primary"}>
-            Погода по городу {city}
+            Погода в городе {city}
           </Typography>
           <Button
             variant={"outlined"}
@@ -124,10 +152,19 @@ function City() {
           </Button>
         </Box>
         <Divider sx={{ mt: 1 }}/>
-        {currentWeatherBox}
+        <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', padding: '1rem' }}>
+          <Typography variant={'h5'}>Прогноз</Typography>
+          <Tabs sx={{ ml: 2 }} value={forecast} onChange={tabsForecastHandler} variant={'scrollable'} scrollButton allowScrollButtonsMobile>
+            <Tab label='сейчас' value={'сейчас'} />
+            <Tab label='На завтра' value={'На завтра'} />
+            <Tab label='На послезавтра' value={'На послезавтра'} />
+          </Tabs>
+        </Box>
+        {weatherBox}
+        {chart}
       </Layout>
     </div>
-  );
+  )
 }
 
 export default City;

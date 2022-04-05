@@ -3,6 +3,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 import createEmotionServer from "@emotion/server/create-instance";
 import theme from "../src/theme";
 import createEmotionCache from "../src/createEmotionCache";
+import YandexMetrika from '../components/YandexMetrika/YandexMetrika'
 
 export default class MyDocument extends Document {
   render() {
@@ -21,6 +22,7 @@ export default class MyDocument extends Document {
         </Head>
         <body>
           <Main />
+          <YandexMetrika />
           <NextScript />
         </body>
       </Html>

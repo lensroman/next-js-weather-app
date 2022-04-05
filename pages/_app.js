@@ -20,15 +20,14 @@ export default function MyApp(props) {
     <CacheProvider value={emotionCache}>
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <title>Погода на день 3 дня Прогноз на неделю</title>
+        <link rel="shortcut icon" href="../public/static/favicon.ico" />
       </Head>
       <ThemeProvider theme={theme}>
-        {/* CssBaseline kickstart an elegant, 
-                consistent, and simple baseline to
-                build upon. */}
-
         <CssBaseline />
         <Component {...pageProps} />
       </ThemeProvider>
+    {/* Created by Roman Lenskiy tg: @chris_robinss */}
     </CacheProvider>
   );
 }
